@@ -24,6 +24,7 @@ public class Booking {
     private LocalDate checkOutDate;
 
     @Min(value = 1, message = "Number of adults must not be less that 1")
+    @Column(name = "num_of_adult")
     private int numOfAdults;
 
     @Min(value = 0, message = "Number of children must not be less that 0")

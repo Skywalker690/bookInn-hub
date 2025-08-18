@@ -44,7 +44,7 @@ public class AwsS3Service {
             // Build the Amazon S3 client with credentials and region
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                    .withRegion(Regions.US_EAST_2) // Ensure this matches your S3 bucket region
+                    .withRegion(Regions.EU_NORTH_1) // Ensure this matches your S3 bucket region
                     .build();
 
             // Convert uploaded file to InputStream
