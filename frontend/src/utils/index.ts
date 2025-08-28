@@ -13,9 +13,19 @@ export const AuthUtils = {
     const userStr = localStorage.getItem('user');
     const role = localStorage.getItem('role');
     
+    let user = null;
+    if (userStr && userStr !== 'undefined' && userStr !== 'null') {
+      try {
+        user = JSON.parse(userStr);
+      } catch (error) {
+        console.warn('Invalid JSON in localStorage for user data, clearing it:', error);
+        localStorage.removeItem('user');
+      }
+    }
+    
     return {
       token,
-      user: userStr ? JSON.parse(userStr) : null,
+      user,
       role,
     };
   },
@@ -42,7 +52,17 @@ export const AuthUtils = {
   // Get current user
   getCurrentUser: () => {
     const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    if (!userStr || userStr === 'undefined' || userStr === 'null') {
+      return null;
+    }
+    
+    try {
+      return JSON.parse(userStr);
+    } catch (error) {
+      console.warn('Invalid JSON in localStorage for user data, clearing it:', error);
+      localStorage.removeItem('user');
+      return null;
+    }
   },
 };
 

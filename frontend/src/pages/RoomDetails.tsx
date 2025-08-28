@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Row,
@@ -21,17 +21,11 @@ const RoomDetails: React.FC = () => {
   const [room, setRoom] = useState<RoomDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingLoading] = useState(false);
 
   const isAuthenticated = AuthUtils.isAuthenticated();
 
-  useEffect(() => {
-    if (id) {
-      fetchRoomDetails();
-    }
-  }, [id]);
-
-  const fetchRoomDetails = async () => {
+  const fetchRoomDetails = useCallback(async () => {
     if (!id) return;
     
     try {
@@ -54,7 +48,13 @@ const RoomDetails: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchRoomDetails();
+    }
+  }, [id, fetchRoomDetails]);
 
   const handleBookNow = () => {
     if (!isAuthenticated) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Row,
@@ -25,13 +25,7 @@ const Profile: React.FC = () => {
 
   const currentUser = AuthUtils.getCurrentUser();
 
-  useEffect(() => {
-    if (currentUser) {
-      fetchUserData();
-    }
-  }, [currentUser]);
-
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!currentUser) return;
 
     try {
@@ -56,7 +50,13 @@ const Profile: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchUserData();
+    }
+  }, [currentUser, fetchUserData]);
 
   const handleCancelBooking = async (bookingId: number) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Row,
@@ -12,7 +12,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { roomAPI, bookingAPI } from '../services/api';
 import { RoomDTO, Booking } from '../types';
-import { DateUtils, CurrencyUtils, AuthUtils, ValidationUtils } from '../utils';
+import { DateUtils, CurrencyUtils, AuthUtils } from '../utils';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const BookingForm: React.FC = () => {
@@ -36,21 +36,7 @@ const BookingForm: React.FC = () => {
 
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof Booking, string>>>({});
 
-  useEffect(() => {
-    if (roomId) {
-      fetchRoomDetails();
-    }
-  }, [roomId]);
-
-  useEffect(() => {
-    // Update total guests when adults or children change
-    setBookingData(prev => ({
-      ...prev,
-      totalNumOfGuest: prev.numOfAdults + prev.numOfChildren
-    }));
-  }, [bookingData.numOfAdults, bookingData.numOfChildren]);
-
-  const fetchRoomDetails = async () => {
+  const fetchRoomDetails = useCallback(async () => {
     if (!roomId) return;
 
     try {
@@ -68,7 +54,21 @@ const BookingForm: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [roomId]);
+
+  useEffect(() => {
+    if (roomId) {
+      fetchRoomDetails();
+    }
+  }, [roomId, fetchRoomDetails]);
+
+  useEffect(() => {
+    // Update total guests when adults or children change
+    setBookingData(prev => ({
+      ...prev,
+      totalNumOfGuest: prev.numOfAdults + prev.numOfChildren
+    }));
+  }, [bookingData.numOfAdults, bookingData.numOfChildren]);
 
   const validateForm = (): boolean => {
     const errors: Partial<Record<keyof Booking, string>> = {};
