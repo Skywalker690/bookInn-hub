@@ -25,7 +25,6 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAddRoomModal, setShowAddRoomModal] = useState(false);
-  const [roomTypes, setRoomTypes] = useState<string[]>([]);
   
   // Add room form state
   const [newRoom, setNewRoom] = useState({
@@ -37,7 +36,6 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchDashboardData();
-    fetchRoomTypes();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -67,15 +65,6 @@ const AdminDashboard: React.FC = () => {
       setError('Failed to load dashboard data. Please try again.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchRoomTypes = async () => {
-    try {
-      const types = await roomAPI.getRoomTypes();
-      setRoomTypes(types);
-    } catch (err: any) {
-      console.error('Error fetching room types:', err);
     }
   };
 
@@ -439,17 +428,14 @@ const AdminDashboard: React.FC = () => {
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Room Type *</Form.Label>
-                  <Form.Select
+                  <Form.Control
+                    type="text"
                     name="roomType"
                     value={newRoom.roomType}
                     onChange={handleRoomInputChange}
+                    placeholder="Enter room type (e.g., Standard, Deluxe, Suite)"
                     required
-                  >
-                    <option value="">Select Room Type</option>
-                    {roomTypes.map(type => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
-                  </Form.Select>
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
