@@ -8,7 +8,9 @@ import {
   Alert,
   Badge,
   Table,
-  Nav
+  Nav,
+  Modal,
+  Form
 } from 'react-bootstrap';
 import { userAPI, roomAPI, bookingAPI } from '../services/api';
 import { UserDTO, RoomDTO, BookingDTO } from '../types';
@@ -22,9 +24,20 @@ const AdminDashboard: React.FC = () => {
   const [bookings, setBookings] = useState<BookingDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showAddRoomModal, setShowAddRoomModal] = useState(false);
+  const [roomTypes, setRoomTypes] = useState<string[]>([]);
+  
+  // Add room form state
+  const [newRoom, setNewRoom] = useState({
+    roomType: '',
+    roomPrice: '',
+    roomDescription: '',
+    roomPhoto: null as File | null
+  });
 
   useEffect(() => {
     fetchDashboardData();
+    fetchRoomTypes();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -54,6 +67,15 @@ const AdminDashboard: React.FC = () => {
       setError('Failed to load dashboard data. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRoomTypes = async () => {
+    try {
+      const types = await roomAPI.getRoomTypes();
+      setRoomTypes(types);
+    } catch (err: any) {
+      console.error('Error fetching room types:', err);
     }
   };
 
@@ -92,6 +114,65 @@ const AdminDashboard: React.FC = () => {
     } catch (err: any) {
       console.error('Delete room error:', err);
       setError('An error occurred while deleting the room.');
+    }
+  };
+
+  const handleAddRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newRoom.roomType || !newRoom.roomPrice || !newRoom.roomDescription) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+
+    if (!newRoom.roomPhoto) {
+      setError('Please select a room photo.');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('roomType', newRoom.roomType);
+      formData.append('roomPrice', newRoom.roomPrice);
+      formData.append('roomDescription', newRoom.roomDescription);
+      formData.append('photo', newRoom.roomPhoto);
+
+      const response = await roomAPI.addRoom(formData);
+      
+      if (response.statusCode === 200) {
+        alert('Room added successfully!');
+        setShowAddRoomModal(false);
+        setNewRoom({
+          roomType: '',
+          roomPrice: '',
+          roomDescription: '',
+          roomPhoto: null
+        });
+        // Refresh the rooms list
+        fetchDashboardData();
+      } else {
+        setError(response.message || 'Failed to add room.');
+      }
+    } catch (err: any) {
+      console.error('Add room error:', err);
+      setError('An error occurred while adding the room.');
+    }
+  };
+
+  const handleRoomInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewRoom(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewRoom(prev => ({
+        ...prev,
+        roomPhoto: e.target.files![0]
+      }));
     }
   };
 
@@ -250,7 +331,9 @@ const AdminDashboard: React.FC = () => {
         <Card>
           <Card.Header className="d-flex justify-content-between align-items-center">
             <h5>Room Management</h5>
-            <Button variant="primary">Add New Room</Button>
+            <Button variant="primary" onClick={() => setShowAddRoomModal(true)}>
+              Add New Room
+            </Button>
           </Card.Header>
           <Card.Body>
             <Table striped hover responsive>
@@ -344,6 +427,84 @@ const AdminDashboard: React.FC = () => {
           </Card.Body>
         </Card>
       )}
+      
+      {/* Add Room Modal */}
+      <Modal show={showAddRoomModal} onHide={() => setShowAddRoomModal(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Room</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={handleAddRoom}>
+          <Modal.Body>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Room Type *</Form.Label>
+                  <Form.Select
+                    name="roomType"
+                    value={newRoom.roomType}
+                    onChange={handleRoomInputChange}
+                    required
+                  >
+                    <option value="">Select Room Type</option>
+                    {roomTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Room Price per Night ($) *</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="roomPrice"
+                    value={newRoom.roomPrice}
+                    onChange={handleRoomInputChange}
+                    placeholder="Enter price"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            
+            <Form.Group className="mb-3">
+              <Form.Label>Room Description *</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={4}
+                name="roomDescription"
+                value={newRoom.roomDescription}
+                onChange={handleRoomInputChange}
+                placeholder="Enter room description"
+                required
+              />
+            </Form.Group>
+            
+            <Form.Group className="mb-3">
+              <Form.Label>Room Photo *</Form.Label>
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                required
+              />
+              <Form.Text className="text-muted">
+                Please select an image file (JPG, PNG, etc.)
+              </Form.Text>
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowAddRoomModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit">
+              Add Room
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
     </Container>
   );
 };

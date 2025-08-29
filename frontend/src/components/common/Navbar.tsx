@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
               <>
                 <LinkContainer to="/profile">
                   <Nav.Link>
-                    Welcome, {currentUser?.name || 'User'}
+                    Welcome, {isAdmin ? 'Admin' : (currentUser?.name || 'User')}
                   </Nav.Link>
                 </LinkContainer>
                 <Button 
