@@ -1,14 +1,31 @@
-[![wakatime](https://wakatime.com/badge/user/0d5ab76c-6ee3-49e6-8838-6d977be50546/project/2fd31973-e9fb-439d-9a77-62f8a6932787.svg)](https://wakatime.com/badge/user/0d5ab76c-6ee3-49e6-8838-6d977be50546/project/2fd31973-e9fb-439d-9a77-62f8a6932787)
-
 # 🚀 BookInn Hub – Hotel Management & Booking App
-
-> **Status:** 🟢 Backend Completed | 🖌️ Frontend In Progress
-
----
 
 ## 📖 Overview
 
-**BookInn Hub** is a **full-stack hotel management and booking platform** built to streamline hotel operations and provide a seamless experience for guests. The project focuses on delivering a robust backend and an intuitive frontend for both hotel managers and customers.
+**BookInn Hub** is a **full-stack hotel management and booking platform** built to streamline hotel operations and provide a seamless experience for guests. The project delivers a **robust backend**, a **modern frontend**, and **scalable deployment** for both hotel managers and customers.
+
+---
+
+## ⚙️ Deployment & Environment
+
+* **Frontend:** Deployed on **Vercel**
+* **Backend:** Hosted on **Render** (cold start may take up to \~1 min)
+* **Database:** **NeonDB PostgreSQL**
+* **Storage:** Images served from **AWS S3**
+
+### 🔑 Environment Variables
+
+```env
+JWT_SECRET=
+
+AWS_ACCESS_KEY=
+AWS_SECRET_KEY=
+BUCKET_NAME=
+
+DB_URL=
+DB_USER=
+DB_PASSWORD=
+```
 
 ---
 
@@ -18,7 +35,7 @@
 
 * Room browsing with real-time availability
 * Easy booking & cancellation
-* Secure payments (planned)
+* Secure payments *(upcoming)*
 * Feedback & reviews
 
 ### **For Hotel Managers:**
@@ -27,12 +44,26 @@
 * Customer insights & analytics
 * Automated notifications & updates
 
+### **Role-Based Access:**
+
+* **Admin & User roles** with restricted access control
+* Demo login credentials:
+
+  * **Email:** `demouser@gmail.com`
+  * **Password:** `demouser`
+* You can test booking lookups using confirmation codes:
+
+  * `MFST1FUDJZ`
+  * `JR5K5NVT1G`
+  * `OY3OJBOXR8`
+
 ### **Tech Highlights:**
 
-* **Backend:** Completed & Tested (Spring Boot + REST API)
-* **Frontend:** Under Development (React)
+* **Backend:** Spring Boot + REST API (Completed)
+* **Frontend:** React (Completed)
 * **Database:** PostgreSQL
-* **Deployment:** Planned (AWS)
+* **Deployment:** Fully deployed on **AWS**
+* **Access Control:** Role-based (Admin/User)
 
 ---
 
@@ -41,27 +72,70 @@
 ```
 BookInn-Hub/
 │── backend/   # Spring Boot Backend (Completed & Tested)
-│── frontend/  # React Frontend (In Progress)
+│── frontend/  # React Frontend (Completed & Deployed)
 │── docs/      # Documentation & API References
 │── README.md
 ```
 
 ---
 
-## 🚀 Roadmap
+## 🌐 Live Demo
 
-* [x] Backend Development
-* [x] API Testing & Integration
-* [ ] Frontend Development
-* [ ] UI/UX Enhancements
-* [ ] Deployment on Cloud
-* [ ] Beta Release
+🔗 **[Deployed App](your-deployment-link)**
 
 ---
 
-## 🤝 Contributing
+## 🔐 Access & Roles
 
-Contributions are welcome once the MVP is released. Stay tuned for contribution guidelines!
+* **Roles:** Admin and User (role-based access enforced)
+* **Demo Login**
+
+  * **Email:** `demouser@gmail.com`
+  * **Password:** `demouser`
+
+### 🔎 Sample Booking Confirmation Codes
+
+Use any of the following codes to look up bookings:
+
+* `MFST1FUDJZ`
+* `JR5K5NVT1G`
+* `OY3OJBOXR8`
+
+---
+
+## 🛠️ Local Setup
+
+1. **Clone the repo**
+
+   ```bash
+   git clone https://github.com/Skywalker690/BookInn-Hub.git
+   cd BookInn-Hub
+   ```
+
+2. **Backend Setup (Spring Boot)**
+
+   * Navigate to `backend/`
+   * Configure the environment variables in `application.properties` or as system envs (see variables above)
+   * Run the Spring Boot app
+
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+3. **Frontend Setup (React)**
+
+   * Navigate to `frontend/`
+   * Install dependencies
+
+   ```bash
+   npm install
+   ```
+
+   * Start the development server
+
+   ```bash
+   npm start
+   ```
 
 ---
 
