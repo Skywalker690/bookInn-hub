@@ -59,8 +59,8 @@ DB_PASSWORD=
 
 ### **Tech Highlights:**
 
-* **Backend:** Spring Boot + REST API (Completed)
-* **Frontend:** React (Completed)
+* **Backend:** Spring Boot + REST API
+* **Frontend:** React 
 * **Database:** PostgreSQL
 * **Deployment:** Fully deployed on **AWS**
 * **Access Control:** Role-based (Admin/User)
