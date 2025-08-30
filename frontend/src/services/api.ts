@@ -7,7 +7,11 @@ import {
   RoomSearchParams 
 } from '../types';
 
-const API_BASE_URL = 'http://localhost:8080';
+const isLocal = window.location.hostname === "localhost";
+
+export const API_BASE_URL = isLocal
+    ? "http://localhost:8080"
+    : "https://bookinn-hub.onrender.com";
 
 // Create axios instance with default config
 const api = axios.create({
