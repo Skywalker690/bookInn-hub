@@ -17,7 +17,6 @@ import java.io.InputStream;
 @Service
 public class AwsS3Service {
 
-    // Injection
     @Value("${bucket-name}")
     private String bucketName;
     @Value("${aws.s3.access.key}")
@@ -25,12 +24,6 @@ public class AwsS3Service {
     @Value("${aws.s3.secret.key}")
     private String secretKey;
 
-    /**
-     * Uploads an image to the specified AWS S3 bucket.
-     *
-     * @param photo Multipart file uploaded from the client (image)
-     * @return public S3 URL of the uploaded image
-     */
     public String saveImageToS3(MultipartFile photo) {
         String s3LocationImage = null;
 
@@ -64,8 +57,6 @@ public class AwsS3Service {
             return "https://" + bucketName + ".s3.amazonaws.com/" + s3FileName;
 
         } catch (Exception e) {
-            e.printStackTrace(); // Log the error
-            // Throw custom application exception with error message
             throw new OurException("Unable to Upload image: " + e.getMessage());
         }
     }

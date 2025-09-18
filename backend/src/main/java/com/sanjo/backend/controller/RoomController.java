@@ -3,6 +3,7 @@ package com.sanjo.backend.controller;
 import com.sanjo.backend.dto.Response;
 import com.sanjo.backend.service.interfac.IBookingService;
 import com.sanjo.backend.service.interfac.IRoomService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,15 +16,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rooms")
+@RequiredArgsConstructor
 public class RoomController {
 
     private final IRoomService roomService;
-    private final IBookingService iBookingService;
-
-    public RoomController(IRoomService roomService, IBookingService iBookingService) {
-        this.roomService = roomService;
-        this.iBookingService = iBookingService;
-    }
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ADMIN')")

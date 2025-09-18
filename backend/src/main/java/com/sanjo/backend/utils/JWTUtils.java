@@ -19,7 +19,7 @@ public class JWTUtils {
     private static final long EXPIRATION_TIME = 1000 * 60 * 24 * 7; // 7 days
     private SecretKey Key;
 
-    //Injecting from env file
+    //Injecting from an env file
     @Value("${jwt.secret}")
     private String secretString;
 

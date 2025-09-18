@@ -38,9 +38,8 @@ public class User implements UserDetails {
     private String role;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    //Cascade for if we delete user we also need to delete bookings of user
+    //Cascade for if we delete user, we also need to delete bookings of user
     private List<Booking> bookings = new ArrayList<>();
-
 
 
 

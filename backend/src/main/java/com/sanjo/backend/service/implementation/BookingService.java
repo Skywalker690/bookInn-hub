@@ -12,25 +12,19 @@ import com.sanjo.backend.repository.UserRepository;
 import com.sanjo.backend.service.interfac.IBookingService;
 import com.sanjo.backend.service.interfac.IRoomService;
 import com.sanjo.backend.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BookingService implements IBookingService {
 
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
-
-    public BookingService(BookingRepository bookingRepository, RoomRepository roomRepository, UserRepository userRepository) {
-        this.bookingRepository = bookingRepository;
-        this.roomRepository = roomRepository;
-        this.userRepository = userRepository;
-    }
-
-
 
     @Override
     public Response saveBooking(Long roomId, Long userId, Booking bookingRequest) {

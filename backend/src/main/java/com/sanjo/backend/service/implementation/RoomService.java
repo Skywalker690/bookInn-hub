@@ -12,6 +12,7 @@ import com.sanjo.backend.repository.RoomRepository;
 import com.sanjo.backend.service.AwsS3Service;
 import com.sanjo.backend.service.interfac.IRoomService;
 import com.sanjo.backend.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,17 +22,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RoomService implements IRoomService {
 
     private final RoomRepository roomRepository;
-    private final BookingRepository bookingRepository;
     private final AwsS3Service awsS3Service;
-
-    public RoomService(RoomRepository roomRepository, BookingRepository bookingRepository, AwsS3Service awsS3Service) {
-        this.roomRepository = roomRepository;
-        this.bookingRepository = bookingRepository;
-        this.awsS3Service = awsS3Service;
-    }
 
     @Override
     public Response addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice, String description) {

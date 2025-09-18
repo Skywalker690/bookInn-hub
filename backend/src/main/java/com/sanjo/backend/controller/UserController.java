@@ -2,6 +2,7 @@ package com.sanjo.backend.controller;
 
 import com.sanjo.backend.dto.Response;
 import com.sanjo.backend.service.interfac.IUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -10,13 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final IUserService userService;
-
-    public UserController(IUserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ADMIN')")

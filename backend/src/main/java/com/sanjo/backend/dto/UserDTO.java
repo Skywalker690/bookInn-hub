@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL) //Don't want to return data with null value
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
 
     private long id;
@@ -18,5 +18,3 @@ public class UserDTO {
     private String role;
     private List<BookingDTO> bookings = new ArrayList<>();
 }
-
-//To Prevent Exposing role and password
