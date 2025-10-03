@@ -1,7 +1,5 @@
 package com.sanjo.backend.security;
 
-import com.sanjo.backend.service.CustomUserDetailsService;
-import com.sanjo.backend.utils.JWTUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

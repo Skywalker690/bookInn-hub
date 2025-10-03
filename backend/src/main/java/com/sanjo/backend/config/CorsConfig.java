@@ -1,4 +1,4 @@
-package com.sanjo.backend.security;
+package com.sanjo.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,9 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://book-inn-hub.vercel.app")
+                        .allowedOrigins("https://book-inn-hub.vercel.app",
+                                "http://localhost:3000"
+                        )
                         .allowedMethods("GET","POST","PUT","DELETE")
                         .allowedOrigins("*");
             }

@@ -1,4 +1,4 @@
-package com.sanjo.backend.utils;
+package com.sanjo.backend.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

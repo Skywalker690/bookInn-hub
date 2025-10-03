@@ -3,17 +3,13 @@ package com.sanjo.backend.service.implementation;
 
 import com.sanjo.backend.dto.Response;
 import com.sanjo.backend.dto.RoomDTO;
-import com.sanjo.backend.dto.UserDTO;
 import com.sanjo.backend.entity.Room;
-import com.sanjo.backend.entity.User;
 import com.sanjo.backend.exception.OurException;
-import com.sanjo.backend.repository.BookingRepository;
 import com.sanjo.backend.repository.RoomRepository;
 import com.sanjo.backend.service.AwsS3Service;
 import com.sanjo.backend.service.interfac.IRoomService;
-import com.sanjo.backend.utils.Utils;
+import com.sanjo.backend.security.Utils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

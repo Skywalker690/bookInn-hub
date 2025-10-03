@@ -10,8 +10,7 @@ import com.sanjo.backend.repository.BookingRepository;
 import com.sanjo.backend.repository.RoomRepository;
 import com.sanjo.backend.repository.UserRepository;
 import com.sanjo.backend.service.interfac.IBookingService;
-import com.sanjo.backend.service.interfac.IRoomService;
-import com.sanjo.backend.utils.Utils;
+import com.sanjo.backend.security.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -162,5 +161,5 @@ public class BookingService implements IBookingService {
                                 || (bookingRequest.getCheckInDate().equals(existingBooking.getCheckOutDate())
                                 && bookingRequest.getCheckOutDate().equals(bookingRequest.getCheckInDate()))
                 );
-    }
+    }   
 }

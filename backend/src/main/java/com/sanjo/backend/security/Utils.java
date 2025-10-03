@@ -1,4 +1,4 @@
-package com.sanjo.backend.utils;
+package com.sanjo.backend.security;
 
 import com.sanjo.backend.dto.BookingDTO;
 import com.sanjo.backend.dto.RoomDTO;
@@ -62,7 +62,7 @@ public class Utils {
         return bookingDTO;
     }
 
-    public static RoomDTO mapRoomEntityToRoomDTOPlusBookings(Room room) {
+    public static RoomDTO mapRoomEntityToRoomDTOPlusBookings(Room room)  {
         RoomDTO roomDTO = new RoomDTO();
 
         roomDTO.setId(room.getId());

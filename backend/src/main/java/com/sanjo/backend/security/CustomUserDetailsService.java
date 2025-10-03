@@ -1,4 +1,4 @@
-package com.sanjo.backend.service;
+package com.sanjo.backend.security;
 
 import com.sanjo.backend.exception.OurException;
 import com.sanjo.backend.repository.UserRepository;

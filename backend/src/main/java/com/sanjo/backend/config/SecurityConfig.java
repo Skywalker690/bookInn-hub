@@ -1,6 +1,7 @@
-package com.sanjo.backend.security;
+package com.sanjo.backend.config;
 
-import com.sanjo.backend.service.CustomUserDetailsService;
+import com.sanjo.backend.security.JWTAuthFilter;
+import com.sanjo.backend.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
