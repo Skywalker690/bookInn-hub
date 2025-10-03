@@ -28,10 +28,8 @@ public class AwsS3Service {
         String s3LocationImage = null;
 
         try {
-            // Get original file name (e.g., "image.jpg")
             String s3FileName = photo.getOriginalFilename();
 
-            // Create AWS credentials using access and secret keys
             BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
 
             // Build the Amazon S3 client with credentials and region
@@ -40,20 +38,15 @@ public class AwsS3Service {
                     .withRegion(Regions.EU_NORTH_1) // Ensure this matches your S3 bucket region
                     .build();
 
-            // Convert uploaded file to InputStream
             InputStream inputStream = photo.getInputStream();
 
-            // Set file metadata (MIME type, content size, etc.)
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("image/jpeg"); // Hardcoded — can be dynamic using photo.getContentType()
+            metadata.setContentType("image/jpeg");
 
             // Create a request to put the object in the S3 bucket
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, s3FileName, inputStream, metadata);
-
-            // Upload the file to S3
             s3Client.putObject(putObjectRequest);
 
-            // Return the public S3 URL of the uploaded image
             return "https://" + bucketName + ".s3.amazonaws.com/" + s3FileName;
 
         } catch (Exception e) {

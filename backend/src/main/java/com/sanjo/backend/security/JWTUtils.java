@@ -47,17 +47,19 @@ public class JWTUtils {
         return extractClaims(token, Claims::getSubject);
     }
 
+
+
+    public boolean isValidToken(String token,UserDetails userDetails){
+        final String username =extractUserName(token);
+        return (username.equals(userDetails.getUsername()) && !isValidExpired(token));
+    }
+
     private <T> T extractClaims(String token, Function<Claims,T> claimsTFunction){
         return claimsTFunction.apply(Jwts.parser()
                 .verifyWith(Key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload());
-    }
-
-    public boolean isValidToken(String token,UserDetails userDetails){
-        final String username =extractUserName(token);
-        return (username.equals(userDetails.getUsername()) && !isValidExpired(token));
     }
 
     private boolean isValidExpired(String token) {
