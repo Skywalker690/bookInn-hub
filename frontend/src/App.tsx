@@ -1,81 +1,80 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
-import Navbar from './components/common/Navbar';
+import { HashRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
+// Pages
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Rooms from './pages/Rooms';
+import AllRooms from './pages/AllRooms';
 import RoomDetails from './pages/RoomDetails';
-import BookingForm from './pages/BookingForm';
 import Profile from './pages/Profile';
-import AdminDashboard from './pages/AdminDashboard';
-import FindBooking from './pages/FindBooking';
-import ProtectedRoute from './components/common/ProtectedRoute';
-import { AuthUtils } from './utils';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import FindBooking from './pages/FindBooking.tsx';
+import ManageRooms from './pages/admin/ManageRooms';
+import ManageBookings from './pages/admin/ManageBookings';
+import ManageUsers from './pages/admin/ManageUsers';
 
-function App() {
-  const isAuthenticated = AuthUtils.isAuthenticated();
+const ProtectedRoute = ({ adminOnly = false }: { adminOnly?: boolean }) => {
+  const { isAuthenticated, isAdmin, loading } = useAuth();
 
-  return (
-    <Router>
-      <div className="App">
+  if (loading) {
+      return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (adminOnly && !isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
+};
+
+const AppContent = () => {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-900">
         <Navbar />
-        <Container fluid className="mt-3">
+        <main className="flex-grow">
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<Home />} />
-            <Route path="/rooms" element={<Rooms />} />
-            <Route path="/rooms/:id" element={<RoomDetails />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/rooms" element={<AllRooms />} />
+            <Route path="/rooms/:roomId" element={<RoomDetails />} />
             <Route path="/find-booking" element={<FindBooking />} />
             
-            {/* Auth routes - redirect if already authenticated */}
-            <Route 
-              path="/login" 
-              element={isAuthenticated ? <Navigate to="/" /> : <Login />} 
-            />
-            <Route 
-              path="/register" 
-              element={isAuthenticated ? <Navigate to="/" /> : <Register />} 
-            />
+            {/* User Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+
+            {/* Admin Protected Routes */}
+            <Route element={<ProtectedRoute adminOnly />}>
+              <Route path="/admin/rooms" element={<ManageRooms />} />
+              <Route path="/admin/bookings" element={<ManageBookings />} />
+              <Route path="/admin/users" element={<ManageUsers />} />
+            </Route>
             
-            {/* Protected routes - require authentication */}
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/book/:roomId" 
-              element={
-                <ProtectedRoute>
-                  <BookingForm />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Admin routes - require admin role */}
-            <Route 
-              path="/admin/*" 
-              element={
-                <ProtectedRoute requireAdmin={true}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-        </Container>
+        </main>
+        <Footer />
       </div>
-    </Router>
+    );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
-}
+};
 
 export default App;

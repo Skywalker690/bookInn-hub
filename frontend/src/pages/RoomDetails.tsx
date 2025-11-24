@@ -1,231 +1,203 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Button,
-  Badge,
-  Alert,
-  Spinner
-} from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { roomAPI } from '../services/api';
+import { ApiService } from '../services/apiService';
 import { RoomDTO } from '../types';
-import { CurrencyUtils, AuthUtils } from '../utils';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useAuth } from '../context/AuthContext';
 
 const RoomDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { roomId } = useParams<{ roomId: string }>();
   const [room, setRoom] = useState<RoomDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [bookingLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-  const isAuthenticated = AuthUtils.isAuthenticated();
-
-  const fetchRoomDetails = useCallback(async () => {
-    if (!id) return;
-    
-    try {
-      setLoading(true);
-      setError('');
-      
-      const response = await roomAPI.getRoomById(parseInt(id));
-      
-      if (response.statusCode === 200 && response.room) {
-        setRoom(response.room);
-      } else {
-        setError(response.message || 'Room not found');
-      }
-    } catch (err: any) {
-      console.error('Error fetching room details:', err);
-      setError(
-        err.response?.data?.message || 
-        'Failed to load room details. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+  // Booking Form State
+  const [bookingData, setBookingData] = useState({
+    checkInDate: '',
+    checkOutDate: '',
+    numOfAdults: 1,
+    numOfChildren: 0
+  });
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      fetchRoomDetails();
-    }
-  }, [id, fetchRoomDetails]);
+    const fetchRoom = async () => {
+      try {
+        if (!roomId) return;
+        const response = await ApiService.getRoomById(roomId);
+        if (response.room) {
+          setRoom(response.room);
+        } else {
+          setError('Room not found');
+        }
+      } catch (err: any) {
+        setError(err.message || 'Error fetching room details');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRoom();
+  }, [roomId]);
 
-  const handleBookNow = () => {
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: `/book/${id}` } } });
-      return;
-    }
-    
-    navigate(`/book/${id}`);
+  const handleBookingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBookingData({ ...bookingData, [e.target.name]: e.target.value });
   };
 
-  const handleBackToRooms = () => {
-    navigate('/rooms');
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated || !user) {
+        navigate('/login', { state: { from: location } });
+        return;
+    }
+
+    setBookingLoading(true);
+    setError('');
+    setSuccessMessage('');
+
+    try {
+        if (!room) return;
+        
+        const response = await ApiService.bookRoom(room.id, user.id, bookingData);
+        if (response.statusCode === 200) {
+            setSuccessMessage(`Booking Confirmed! Code: ${response.bookingConfirmationCode}`);
+            // Reset form
+            setBookingData({
+                checkInDate: '',
+                checkOutDate: '',
+                numOfAdults: 1,
+                numOfChildren: 0
+            });
+        } else {
+            setError(response.message || 'Booking failed');
+        }
+    } catch (err: any) {
+        setError(err.message || 'Booking failed. Room might be unavailable.');
+    } finally {
+        setBookingLoading(false);
+    }
   };
 
-  if (loading) {
-    return <LoadingSpinner message="Loading room details..." />;
-  }
+  if (loading) return <div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
+  if (!room) return <div className="text-center py-20 text-red-600">Room not found.</div>;
 
-  if (error || !room) {
-    return (
-      <Container>
-        <Alert variant="danger">
-          <h4>Error Loading Room</h4>
-          <p>{error || 'Room not found'}</p>
-          <Button variant="outline-danger" onClick={handleBackToRooms}>
-            Back to Rooms
-          </Button>
-        </Alert>
-      </Container>
-    );
-  }
+  const imageUrl = room.roomPhotoUrl || 'https://picsum.photos/800/400';
 
   return (
-    <Container>
-      {/* Breadcrumb */}
-      <nav className="mb-4">
-        <Button 
-          variant="outline-secondary" 
-          onClick={handleBackToRooms}
-          className="mb-3"
-        >
-          ← Back to Rooms
-        </Button>
-      </nav>
-
-      <Row>
-        {/* Room Image */}
-        <Col lg={8}>
-          <Card className="mb-4">
-            <Card.Img 
-              variant="top" 
-              src={room.roomPhotoUrl || '/placeholder-room.jpg'} 
-              alt={room.roomType}
-              style={{ height: '400px', objectFit: 'cover' }}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+        <div className="md:flex">
+          <div className="md:w-1/2 h-96 md:h-auto">
+            <img 
+              src={imageUrl} 
+              alt={room.roomType} 
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).src = 'https://picsum.photos/800/400?grayscale'; }}
             />
-          </Card>
-        </Col>
-
-        {/* Room Info & Booking */}
-        <Col lg={4}>
-          <Card>
-            <Card.Body>
-              <Card.Title className="h3">{room.roomType}</Card.Title>
-              
-              <div className="mb-3">
-                <Badge bg="primary" className="me-2">Available</Badge>
-                <Badge bg="secondary">Room #{room.id}</Badge>
-              </div>
-
-              <div className="mb-3">
-                <span className="h4 text-primary">
-                  {CurrencyUtils.formatPrice(room.roomPrice)}
-                </span>
-                <span className="text-muted">/night</span>
-              </div>
-
-              <div className="mb-4">
-                <p className="text-muted mb-2">Description:</p>
-                <p>
-                  {room.roomDescription || 
-                   'Experience comfort and luxury in this beautifully appointed room. Perfect for both business and leisure travelers.'}
+          </div>
+          <div className="md:w-1/2 p-8 flex flex-col justify-between">
+            <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{room.roomType}</h1>
+                <p className="text-2xl text-blue-600 font-semibold mb-6">${room.roomPrice} <span className="text-sm text-gray-500 font-normal">/ night</span></p>
+                
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Description</h3>
+                <p className="text-gray-600 leading-relaxed mb-6">
+                {room.roomDescription}
                 </p>
-              </div>
+            </div>
 
-              <div className="d-grid">
-                <Button 
-                  variant="primary" 
-                  size="lg"
-                  onClick={handleBookNow}
-                  disabled={bookingLoading}
-                >
-                  {bookingLoading ? (
-                    <>
-                      <Spinner animation="border" size="sm" className="me-2" />
-                      Processing...
-                    </>
-                  ) : isAuthenticated ? (
-                    'Book This Room'
-                  ) : (
-                    'Login to Book'
-                  )}
-                </Button>
-              </div>
+            {/* Booking Section */}
+            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Book This Room</h3>
+                
+                {successMessage && (
+                    <div className="bg-green-100 text-green-800 p-3 rounded mb-4 text-sm border border-green-200">
+                        {successMessage}
+                    </div>
+                )}
+                
+                {error && (
+                    <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm border border-red-200">
+                        {error}
+                    </div>
+                )}
 
-              {!isAuthenticated && (
-                <p className="text-center text-muted mt-2 mb-0">
-                  <small>Please log in to make a reservation</small>
-                </p>
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Room Features */}
-      <Row className="mt-4">
-        <Col>
-          <Card>
-            <Card.Header>
-              <h5 className="mb-0">Room Features & Amenities</h5>
-            </Card.Header>
-            <Card.Body>
-              <Row>
-                <Col md={6}>
-                  <h6>Standard Features:</h6>
-                  <ul>
-                    <li>Free Wi-Fi</li>
-                    <li>Air Conditioning</li>
-                    <li>Private Bathroom</li>
-                    <li>24/7 Room Service</li>
-                    <li>Daily Housekeeping</li>
-                  </ul>
-                </Col>
-                <Col md={6}>
-                  <h6>Additional Amenities:</h6>
-                  <ul>
-                    <li>Flat-screen TV</li>
-                    <li>Mini Refrigerator</li>
-                    <li>Work Desk</li>
-                    <li>Safe Box</li>
-                    <li>Complimentary Toiletries</li>
-                  </ul>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Booking Info */}
-      <Row className="mt-4">
-        <Col>
-          <Card className="bg-light">
-            <Card.Body>
-              <h6>Booking Information:</h6>
-              <Row>
-                <Col md={4}>
-                  <strong>Check-in:</strong> 3:00 PM
-                </Col>
-                <Col md={4}>
-                  <strong>Check-out:</strong> 11:00 AM
-                </Col>
-                <Col md={4}>
-                  <strong>Cancellation:</strong> Free until 24h before
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+                {isAuthenticated ? (
+                    <form onSubmit={handleBookingSubmit} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 uppercase">Check In</label>
+                                <input 
+                                    type="date" 
+                                    name="checkInDate"
+                                    required
+                                    value={bookingData.checkInDate}
+                                    onChange={handleBookingChange}
+                                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 uppercase">Check Out</label>
+                                <input 
+                                    type="date" 
+                                    name="checkOutDate"
+                                    required
+                                    value={bookingData.checkOutDate}
+                                    onChange={handleBookingChange}
+                                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                             <div>
+                                <label className="block text-xs font-medium text-gray-500 uppercase">Adults</label>
+                                <input 
+                                    type="number" 
+                                    name="numOfAdults"
+                                    min="1"
+                                    required
+                                    value={bookingData.numOfAdults}
+                                    onChange={handleBookingChange}
+                                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 uppercase">Children</label>
+                                <input 
+                                    type="number" 
+                                    name="numOfChildren"
+                                    min="0"
+                                    value={bookingData.numOfChildren}
+                                    onChange={handleBookingChange}
+                                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                        </div>
+                        <button 
+                            type="submit" 
+                            disabled={bookingLoading}
+                            className={`w-full bg-blue-600 text-white font-bold py-3 rounded-md hover:bg-blue-700 transition ${bookingLoading ? 'opacity-70' : ''}`}
+                        >
+                            {bookingLoading ? 'Processing...' : 'Confirm Booking'}
+                        </button>
+                    </form>
+                ) : (
+                    <div className="text-center py-4">
+                        <p className="text-gray-600 mb-4">Please log in to book this room.</p>
+                        <button 
+                            onClick={() => navigate('/login', { state: { from: `/rooms/${room.id}` } })}
+                            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+                        >
+                            Login
+                        </button>
+                    </div>
+                )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

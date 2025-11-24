@@ -1,58 +1,23 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "bookinn-hub",
   "private": true,
-  "dependencies": {
-    "@fortawesome/fontawesome-free": "^7.0.0",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.8.0",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.126",
-    "@types/react": "^19.1.12",
-    "@types/react-dom": "^19.1.9",
-    "@types/react-router-dom": "^5.3.3",
-    "axios": "^1.11.0",
-    "bootstrap": "^5.3.8",
-    "react": "^19.1.1",
-    "react-bootstrap": "^2.10.10",
-    "react-dom": "^19.1.1",
-    "react-router-bootstrap": "^0.26.3",
-    "react-router-dom": "^7.8.2",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
-  },
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.6",
+    "lucide-react": "^0.554.0"
   },
   "devDependencies": {
-    "@craco/craco": "^7.1.0",
-    "@types/react-router-bootstrap": "^0.26.8",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.12"
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
   }
 }

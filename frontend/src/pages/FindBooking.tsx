@@ -1,313 +1,159 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Form,
-  Button,
-  Alert,
-  Spinner,
-  Badge
-} from 'react-bootstrap';
-import { bookingAPI } from '../services/api';
+import { ApiService } from '../services/apiService';
 import { BookingDTO } from '../types';
-import { CurrencyUtils, DateUtils, ValidationUtils } from '../utils';
 
 const FindBooking: React.FC = () => {
-  const [confirmationCode, setConfirmationCode] = useState('');
-  const [booking, setBooking] = useState<BookingDTO | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [searched, setSearched] = useState(false);
+    const [confirmationCode, setConfirmationCode] = useState('');
+    const [booking, setBooking] = useState<BookingDTO | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!ValidationUtils.isRequired(confirmationCode)) {
-      setError('Please enter a confirmation code');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError('');
-      setBooking(null);
-      setSearched(true);
-
-      const response = await bookingAPI.getBookingByConfirmationCode(confirmationCode);
-      
-      if (response.statusCode === 200 && response.booking) {
-        setBooking(response.booking);
-      } else {
-        setError(response.message || 'Booking not found. Please check your confirmation code.');
-      }
-    } catch (err: any) {
-      console.error('Find booking error:', err);
-      setError(
-        err.response?.data?.message || 
-        'An error occurred while searching for your booking. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCancelBooking = async () => {
-    if (!booking) return;
-
-    if (!window.confirm('Are you sure you want to cancel this booking?')) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await bookingAPI.cancelBooking(booking.id);
-      
-      if (response.statusCode === 200) {
+    const handleSearch = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if(!confirmationCode.trim()) return;
+        
+        setLoading(true);
+        setError('');
         setBooking(null);
-        setConfirmationCode('');
-        setSearched(false);
-        alert('Booking cancelled successfully!');
-      } else {
-        setError(response.message || 'Failed to cancel booking. Please try again.');
-      }
-    } catch (err: any) {
-      console.error('Cancel booking error:', err);
-      setError(
-        err.response?.data?.message || 
-        'An error occurred while cancelling your booking. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const calculateNights = (checkInDate: string, checkOutDate: string): number => {
-    return DateUtils.daysBetween(checkInDate, checkOutDate);
-  };
+        try {
+            const response = await ApiService.getBookingByConfirmationCode(confirmationCode);
+            if (response.statusCode === 200 && response.booking) {
+                setBooking(response.booking);
+            } else {
+                setError(response.message || 'Booking not found');
+            }
+        } catch (err: any) {
+            setError(err.message || 'Error finding booking. Please check the code and try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const calculateTotalPrice = (booking: BookingDTO): number => {
-    if (!booking.room) return 0;
-    return booking.room.roomPrice * calculateNights(booking.checkInDate, booking.checkOutDate);
-  };
-
-  return (
-    <Container>
-      <Row className="justify-content-center">
-        <Col lg={8}>
-          <Card>
-            <Card.Header>
-              <h3>Find Your Booking</h3>
-              <p className="mb-0 text-muted">
-                Enter your confirmation code to view or manage your booking
-              </p>
-            </Card.Header>
-            <Card.Body>
-              {error && (
-                <Alert variant="danger" dismissible onClose={() => setError('')}>
-                  {error}
-                </Alert>
-              )}
-
-              <Form onSubmit={handleSubmit}>
-                <Row>
-                  <Col md={8}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Booking Confirmation Code</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={confirmationCode}
-                        onChange={(e) => setConfirmationCode(e.target.value.toUpperCase())}
-                        placeholder="Enter your confirmation code (e.g., ABC123XYZ)"
-                        disabled={loading}
-                        style={{ fontFamily: 'monospace' }}
-                      />
-                      <Form.Text className="text-muted">
-                        You received this code when you made your booking
-                      </Form.Text>
-                    </Form.Group>
-                  </Col>
-                  <Col md={4} className="d-flex align-items-end">
-                    <Button 
-                      type="submit" 
-                      variant="primary" 
-                      disabled={loading || !confirmationCode.trim()}
-                      className="w-100 mb-3"
-                    >
-                      {loading ? (
-                        <>
-                          <Spinner animation="border" size="sm" className="me-2" />
-                          Searching...
-                        </>
-                      ) : (
-                        'Find Booking'
-                      )}
-                    </Button>
-                  </Col>
-                </Row>
-              </Form>
-
-              {/* Search Results */}
-              {searched && !loading && !booking && !error && (
-                <Alert variant="info">
-                  <h5>No Booking Found</h5>
-                  <p>
-                    We couldn't find a booking with that confirmation code. 
-                    Please check the code and try again.
-                  </p>
-                </Alert>
-              )}
-
-              {/* Booking Details */}
-              {booking && (
-                <div className="mt-4">
-                  <Alert variant="success">
-                    <h5>Booking Found!</h5>
-                    <p className="mb-0">Your booking details are displayed below.</p>
-                  </Alert>
-
-                  <Card className="mt-3">
-                    <Card.Header className="d-flex justify-content-between align-items-center">
-                      <h5 className="mb-0">Booking Details</h5>
-                      <Badge bg="primary">
-                        Confirmation: {booking.bookingConfirmationCode}
-                      </Badge>
-                    </Card.Header>
-                    <Card.Body>
-                      <Row>
-                        {/* Guest Information */}
-                        <Col md={6}>
-                          <h6>Guest Information</h6>
-                          {booking.user && (
-                            <div className="mb-3">
-                              <p className="mb-1"><strong>Name:</strong> {booking.user.name}</p>
-                              <p className="mb-1"><strong>Email:</strong> {booking.user.email}</p>
-                              <p className="mb-0"><strong>Phone:</strong> {booking.user.phoneNumber}</p>
-                            </div>
-                          )}
-
-                          <h6>Stay Details</h6>
-                          <div className="mb-3">
-                            <p className="mb-1">
-                              <strong>Check-in:</strong> {booking.checkInDate}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Check-out:</strong> {booking.checkOutDate}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Nights:</strong> {calculateNights(booking.checkInDate, booking.checkOutDate)}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Adults:</strong> {booking.numOfAdults}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Children:</strong> {booking.numOfChildren}
-                            </p>
-                            <p className="mb-0">
-                              <strong>Total Guests:</strong> {booking.totalNumOfGuest}
-                            </p>
-                          </div>
-                        </Col>
-
-                        {/* Room Information */}
-                        <Col md={6}>
-                          {booking.room && (
-                            <>
-                              <h6>Room Information</h6>
-                              <div className="mb-3">
-                                <p className="mb-1">
-                                  <strong>Room Type:</strong> {booking.room.roomType}
-                                </p>
-                                <p className="mb-1">
-                                  <strong>Room Number:</strong> #{booking.room.id}
-                                </p>
-                                <p className="mb-1">
-                                  <strong>Price per Night:</strong> {CurrencyUtils.formatPrice(booking.room.roomPrice)}
-                                </p>
-                                <p className="mb-0">
-                                  <strong>Total Amount:</strong>{' '}
-                                  <span className="text-primary h6">
-                                    {CurrencyUtils.formatPrice(calculateTotalPrice(booking))}
-                                  </span>
-                                </p>
-                              </div>
-
-                              {booking.room.roomPhotoUrl && (
-                                <div>
-                                  <h6>Room Image</h6>
-                                  <img 
-                                    src={booking.room.roomPhotoUrl} 
-                                    alt={booking.room.roomType}
-                                    className="img-fluid rounded"
-                                    style={{ maxHeight: '200px', objectFit: 'cover' }}
-                                  />
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </Col>
-                      </Row>
-
-                      {/* Action Buttons */}
-                      <hr />
-                      <div className="d-flex gap-2">
-                        <Button 
-                          variant="danger" 
-                          onClick={handleCancelBooking}
-                          disabled={loading}
-                        >
-                          {loading ? (
-                            <>
-                              <Spinner animation="border" size="sm" className="me-2" />
-                              Cancelling...
-                            </>
-                          ) : (
-                            'Cancel Booking'
-                          )}
-                        </Button>
-                        <Button 
-                          variant="outline-primary"
-                          onClick={() => window.print()}
-                        >
-                          Print Details
-                        </Button>
-                      </div>
-
-                      <Alert variant="warning" className="mt-3 mb-0">
-                        <small>
-                          <strong>Cancellation Policy:</strong> Free cancellation up to 24 hours before check-in. 
-                          Late cancellations may incur charges.
-                        </small>
-                      </Alert>
-                    </Card.Body>
-                  </Card>
+    return (
+        <div className="min-h-[80vh] flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+            <div className="w-full max-w-md space-y-8">
+                <div className="text-center">
+                    <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
+                        Find Your Booking
+                    </h2>
+                    <p className="mt-2 text-sm text-gray-600">
+                        Enter your confirmation code to view booking details.
+                    </p>
                 </div>
-              )}
-            </Card.Body>
-          </Card>
+                
+                <form className="mt-8 space-y-6" onSubmit={handleSearch}>
+                    <div className="rounded-md shadow-sm -space-y-px">
+                        <div>
+                            <label htmlFor="confirmation-code" className="sr-only">Confirmation Code</label>
+                            <input
+                                id="confirmation-code"
+                                name="code"
+                                type="text"
+                                required
+                                className="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm shadow-sm"
+                                placeholder="Confirmation Code (e.g. ABC123456)"
+                                value={confirmationCode}
+                                onChange={(e) => setConfirmationCode(e.target.value)}
+                            />
+                        </div>
+                    </div>
 
-          {/* Help Section */}
-          <Card className="mt-4">
-            <Card.Body>
-              <h6>Need Help?</h6>
-              <p className="mb-2">
-                If you're having trouble finding your booking:
-              </p>
-              <ul className="mb-3">
-                <li>Check your email for the confirmation message</li>
-                <li>Make sure you're entering the complete confirmation code</li>
-                <li>Contact customer service if you still can't find your booking</li>
-              </ul>
-              <Button variant="outline-secondary" size="sm">
-                Contact Support
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
-  );
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition disabled:opacity-70"
+                        >
+                            {loading ? 'Searching...' : 'Find Booking'}
+                        </button>
+                    </div>
+                </form>
+
+                {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded relative text-center text-sm" role="alert">
+                        <span className="block sm:inline">{error}</span>
+                    </div>
+                )}
+            </div>
+
+            {booking && (
+                <div className="mt-10 w-full max-w-2xl bg-white shadow-lg overflow-hidden sm:rounded-lg border border-gray-100">
+                    <div className="px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                        <div>
+                            <h3 className="text-lg leading-6 font-bold text-gray-900">
+                                Booking Details
+                            </h3>
+                            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                Confirmation Code: <span className="font-mono font-bold text-blue-600">{booking.bookingConfirmationCode}</span>
+                            </p>
+                        </div>
+                        <div className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full uppercase tracking-wide">
+                            Confirmed
+                        </div>
+                    </div>
+                    <div className="border-t border-gray-200">
+                        <dl>
+                            <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt className="text-sm font-medium text-gray-500">Dates</dt>
+                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                    <div className="flex space-x-4">
+                                        <div>
+                                            <span className="block text-xs text-gray-500 uppercase">Check-in</span>
+                                            <span className="font-semibold">{booking.checkInDate}</span>
+                                        </div>
+                                        <div>
+                                            <span className="block text-xs text-gray-500 uppercase">Check-out</span>
+                                            <span className="font-semibold">{booking.checkOutDate}</span>
+                                        </div>
+                                    </div>
+                                </dd>
+                            </div>
+                            
+                            <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt className="text-sm font-medium text-gray-500">Guests</dt>
+                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                    {booking.totalNumOfGuest} Total ({booking.numOfAdults} Adults, {booking.numOfChildren} Children)
+                                </dd>
+                            </div>
+
+                            {booking.user && (
+                                 <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                    <dt className="text-sm font-medium text-gray-500">Guest Info</dt>
+                                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                        <p className="font-medium">{booking.user.name}</p>
+                                        <p className="text-gray-500">{booking.user.email}</p>
+                                    </dd>
+                                </div>
+                            )}
+
+                            {booking.room && (
+                                <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                    <dt className="text-sm font-medium text-gray-500">Room Info</dt>
+                                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                        <div className="flex flex-col sm:flex-row gap-4">
+                                            {booking.room.roomPhotoUrl && (
+                                                <img 
+                                                    src={booking.room.roomPhotoUrl} 
+                                                    alt="Room" 
+                                                    className="w-full sm:w-32 h-24 object-cover rounded-md"
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://picsum.photos/200/200?grayscale'; }}
+                                                />
+                                            )}
+                                            <div>
+                                                <div className="font-bold text-gray-900">{booking.room.roomType}</div>
+                                                <div className="text-blue-600 font-semibold mt-1">${booking.room.roomPrice} <span className="text-gray-500 font-normal text-xs">/ night</span></div>
+                                                <div className="text-gray-500 text-xs mt-1 line-clamp-2">{booking.room.roomDescription}</div>
+                                            </div>
+                                        </div>
+                                    </dd>
+                                </div>
+                            )}
+                        </dl>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 };
-
 export default FindBooking;
