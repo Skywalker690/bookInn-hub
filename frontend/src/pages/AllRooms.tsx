@@ -3,7 +3,7 @@ import { ApiService } from '../services/apiService';
 import { RoomDTO } from '../types';
 import RoomCard from '../components/RoomCard';
 import { ROOM_TYPES } from '../constants';
-import { Search } from 'lucide-react';
+import { Search, Calendar, Filter, X } from 'lucide-react';
 
 const AllRooms: React.FC = () => {
   const [rooms, setRooms] = useState<RoomDTO[]>([]);
@@ -38,7 +38,6 @@ const AllRooms: React.FC = () => {
     setLoading(true);
     setError('');
 
-    // If searching, we need specific parameters or if cleared, fetch all
     if (!checkInDate && !checkOutDate && !roomType) {
         await fetchAllRooms();
         return;
@@ -49,13 +48,9 @@ const AllRooms: React.FC = () => {
       if (response.roomList) {
         setRooms(response.roomList);
       } else {
-        setRooms([]); // No rooms found
+        setRooms([]);
       }
     } catch (err: any) {
-       // If API returns 400 for missing fields, we might want to just show all rooms or show error
-       // The API docs say it returns 400 if fields are missing for the specific "available-rooms-by-date-and-type" endpoint
-       // But user might want to filter just by type using a client side filter if the API doesn't support partials well.
-       // However, strictly following API usage:
        setError(err.message || "Failed to search rooms");
     } finally {
       setLoading(false);
@@ -70,56 +65,84 @@ const AllRooms: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Our Rooms</h1>
-        
-        {/* Search Bar */}
-        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
-              <input 
-                type="date" 
-                value={checkInDate}
-                onChange={(e) => setCheckInDate(e.target.value)}
-                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border"
-              />
+    <div className="bg-gray-50 min-h-screen pb-20">
+      {/* Hero Section */}
+      <div className="relative h-[400px] flex items-center justify-center">
+         <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80")' }}
+         >
+            <div className="absolute inset-0 bg-black/50"></div>
+         </div>
+         <div className="relative z-10 text-center text-white px-4">
+            <h1 className="text-4xl md:text-5xl font-bold font-serif mb-4 tracking-tight">Our Accommodations</h1>
+            <p className="text-lg md:text-xl font-light text-gray-200 max-w-2xl mx-auto">
+              Discover a collection of rooms and suites designed for your ultimate comfort and relaxation.
+            </p>
+         </div>
+      </div>
+
+      {/* Floating Search Bar */}
+      <div className="container mx-auto px-4 -mt-10 relative z-20">
+        <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
+          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="relative group">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Check-in</label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400 group-focus-within:text-blue-600" />
+                <input 
+                  type="date" 
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-700 font-medium"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
-              <input 
-                type="date" 
-                value={checkOutDate}
-                onChange={(e) => setCheckOutDate(e.target.value)}
-                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border"
-              />
+            
+            <div className="relative group">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Check-out</label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400 group-focus-within:text-blue-600" />
+                <input 
+                  type="date" 
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-700 font-medium"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
-              <select
-                value={roomType}
-                onChange={(e) => setRoomType(e.target.value)}
-                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border"
-              >
-                <option value="">All Types</option>
-                {ROOM_TYPES.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
+            
+            <div className="relative group">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Room Type</label>
+              <div className="relative">
+                <Filter className="absolute left-3 top-3 h-5 w-5 text-gray-400 group-focus-within:text-blue-600" />
+                <select
+                  value={roomType}
+                  onChange={(e) => setRoomType(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-700 font-medium appearance-none"
+                >
+                  <option value="">All Collections</option>
+                  {ROOM_TYPES.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div className="flex space-x-2">
+            
+            <div className="flex items-end gap-3">
                 <button 
                     type="submit"
-                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex justify-center items-center"
+                    className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:shadow-xl transition-all duration-300 flex justify-center items-center h-[52px]"
                 >
-                    <Search className="h-4 w-4 mr-2" /> Search
+                    <Search className="h-5 w-5 mr-2" /> Check Availability
                 </button>
                  <button 
                     type="button"
                     onClick={handleClearFilters}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition"
+                    className="px-5 bg-white text-gray-600 border border-gray-200 rounded-lg font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-300 flex items-center justify-center h-[52px] shadow-sm whitespace-nowrap group"
+                    title="Clear All Filters"
                 >
+                    <X className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" /> 
                     Clear
                 </button>
             </div>
@@ -127,31 +150,37 @@ const AllRooms: React.FC = () => {
         </div>
       </div>
 
-      {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md mb-6 border border-red-200">
-              {error}
-          </div>
-      )}
+      <div className="container mx-auto px-4 mt-16 max-w-7xl">
+        {error && (
+            <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-8 border border-red-200 flex items-center justify-center">
+                {error}
+            </div>
+        )}
 
-      {loading ? (
-        <div className="flex justify-center h-64 items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      ) : (
-        <>
-            {rooms.length === 0 ? (
-                <div className="text-center py-20 text-gray-500 bg-white rounded-lg shadow-sm">
-                    <p className="text-xl">No rooms found based on your criteria.</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {rooms.map(room => (
-                        <RoomCard key={room.id} room={room} />
-                    ))}
-                </div>
-            )}
-        </>
-      )}
+        {loading ? (
+            <div className="flex justify-center py-32">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        ) : (
+            <>
+                {rooms.length === 0 ? (
+                    <div className="text-center py-32">
+                        <div className="inline-block p-6 rounded-full bg-gray-100 mb-4">
+                            <Search className="h-8 w-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-xl font-medium text-gray-900 mb-2">No rooms available</h3>
+                        <p className="text-gray-500">Try adjusting your search criteria</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
+                        {rooms.map(room => (
+                            <RoomCard key={room.id} room={room} />
+                        ))}
+                    </div>
+                )}
+            </>
+        )}
+      </div>
     </div>
   );
 };
