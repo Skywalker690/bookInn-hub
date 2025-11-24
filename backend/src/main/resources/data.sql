@@ -30,22 +30,22 @@ INSERT INTO users (name, email, password, phone_number, role) VALUES
 -- ===============================
 INSERT INTO room (room_type, room_price, room_photo_url, room_description) VALUES
 -- Standard Rooms
-('Standard', 100.00, NULL, 'Comfortable room with basic amenities including queen-size bed, private bathroom, free Wi-Fi, flat-screen TV, and mini-fridge. Perfect for solo travelers or couples.'),
-('Standard', 100.00, NULL, 'Cozy standard room featuring modern decor, comfortable bedding, workspace area, and all essential amenities for a pleasant stay.'),
-('Standard', 100.00, NULL, 'Well-appointed standard room with city view, comfortable furnishings, and convenient access to hotel facilities.'),
+('Standard', 100.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/12.jpeg', 'Comfortable room with basic amenities including queen-size bed, private bathroom, free Wi-Fi, flat-screen TV, and mini-fridge. Perfect for solo travelers or couples.'),
+('Standard', 100.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/1212.jpeg', 'Cozy standard room featuring modern decor, comfortable bedding, workspace area, and all essential amenities for a pleasant stay.'),
+('Standard', 100.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/123.jpeg', 'Well-appointed standard room with city view, comfortable furnishings, and convenient access to hotel facilities.'),
 
 -- Deluxe Rooms
-('Deluxe', 150.00, NULL, 'Spacious deluxe room with premium amenities including king-size bed, luxury bathroom with bathtub, sitting area, work desk, complimentary refreshments, and stunning views.'),
-('Deluxe', 150.00, NULL, 'Elegantly designed deluxe room offering extra space, upscale furnishings, premium bedding, coffee maker, and enhanced bathroom amenities.'),
-('Deluxe', 150.00, NULL, 'Modern deluxe accommodation with panoramic windows, separate seating area, high-speed internet, and contemporary comfort.'),
+('Deluxe', 150.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/12312.jpeg', 'Spacious deluxe room with premium amenities including king-size bed, luxury bathroom with bathtub, sitting area, work desk, complimentary refreshments, and stunning views.'),
+('Deluxe', 150.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/15.jpeg', 'Elegantly designed deluxe room offering extra space, upscale furnishings, premium bedding, coffee maker, and enhanced bathroom amenities.'),
+('Deluxe', 150.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/23.jpeg', 'Modern deluxe accommodation with panoramic windows, separate seating area, high-speed internet, and contemporary comfort.'),
 
 -- Suite Rooms
-('Suite', 250.00, NULL, 'Luxurious suite featuring separate living room and bedroom, premium king-size bed, sofa bed, dining area, kitchenette, two bathrooms, and exclusive concierge service.'),
-('Suite', 250.00, NULL, 'Executive suite with spacious layout, elegant decor, premium entertainment system, mini-bar, workspace, and access to executive lounge.'),
+('Suite', 250.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/8.jpeg', 'Luxurious suite featuring separate living room and bedroom, premium king-size bed, sofa bed, dining area, kitchenette, two bathrooms, and exclusive concierge service.'),
+('Suite', 250.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/hotel2.jpeg', 'Executive suite with spacious layout, elegant decor, premium entertainment system, mini-bar, workspace, and access to executive lounge.'),
 
 -- Presidential Suite
-('Presidential', 500.00, NULL, 'Top-tier presidential suite spanning 1500 sq ft with master bedroom, guest bedroom, grand living room, full kitchen, dining room for 8, luxury bathrooms with jacuzzi, private balcony, 24/7 butler service, and exclusive amenities.'),
-('Presidential', 500.00, NULL, 'Ultimate luxury presidential suite featuring panoramic city views, state-of-the-art entertainment, designer furnishings, full bar, spa bathroom, and personalized concierge services.');
+('Presidential', 500.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/hotel3.jpeg', 'Top-tier presidential suite spanning 1500 sq ft with master bedroom, guest bedroom, grand living room, full kitchen, dining room for 8, luxury bathrooms with jacuzzi, private balcony, 24/7 butler service, and exclusive amenities.'),
+('Presidential', 500.00, 'https://skywalker-hotel-images.s3.eu-north-1.amazonaws.com/hotel4.jpeg', 'Ultimate luxury presidential suite featuring panoramic city views, state-of-the-art entertainment, designer furnishings, full bar, spa bathroom, and personalized concierge services.');
 
 -- ===============================
 -- Seed Bookings

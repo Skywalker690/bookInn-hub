@@ -80,7 +80,7 @@ public class UserService implements IUserService {
         } catch (Exception e) {
 
             response.setStatusCode(500);
-            response.setMessage("Error Occurred During USer Login " + e.getMessage());
+            response.setMessage("Error Occurred During User Login " + e.getMessage());
         }
         return response;
     }
