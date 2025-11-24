@@ -80,7 +80,40 @@ const RoomDetails: React.FC = () => {
     }
   };
 
-  if (loading) return <div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
+  if (loading) {
+    return (
+        <div className="bg-white font-sans min-h-screen">
+            {/* Skeleton Hero */}
+            <div className="h-[60vh] w-full bg-gray-200 animate-pulse relative">
+                 <div className="absolute bottom-0 left-0 w-full p-8 md:p-16 max-w-7xl mx-auto space-y-4">
+                     <div className="h-6 w-32 bg-gray-300 rounded-full"></div>
+                     <div className="h-16 w-1/2 bg-gray-300 rounded"></div>
+                     <div className="h-6 w-48 bg-gray-300 rounded"></div>
+                 </div>
+            </div>
+            {/* Skeleton Content */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                 <div className="flex flex-col lg:flex-row gap-16">
+                     <div className="lg:w-2/3 space-y-8">
+                         <div className="space-y-4">
+                             <div className="h-8 w-1/3 bg-gray-200 rounded animate-pulse"></div>
+                             <div className="space-y-2">
+                                 <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+                                 <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+                                 <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse"></div>
+                             </div>
+                         </div>
+                         <div className="h-40 bg-gray-100 rounded-lg animate-pulse"></div>
+                     </div>
+                     <div className="lg:w-1/3">
+                         <div className="h-96 bg-gray-200 rounded-2xl animate-pulse"></div>
+                     </div>
+                 </div>
+            </div>
+        </div>
+    );
+  }
+
   if (!room) return <div className="text-center py-20 text-gray-500">Room not found.</div>;
 
   const imageUrl = room.roomPhotoUrl || 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80';

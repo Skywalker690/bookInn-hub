@@ -158,8 +158,20 @@ const AllRooms: React.FC = () => {
         )}
 
         {loading ? (
-            <div className="flex justify-center py-32">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
+                {[...Array(6)].map((_, index) => (
+                <div key={index} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 h-full flex flex-col">
+                    <div className="h-72 bg-gray-200 animate-pulse"></div>
+                    <div className="p-6 flex flex-col flex-grow space-y-4">
+                    <div className="h-8 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                    <div className="space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
+                        <div className="h-4 bg-gray-200 rounded w-5/6 animate-pulse"></div>
+                    </div>
+                    <div className="h-12 bg-gray-200 rounded mt-auto animate-pulse"></div>
+                    </div>
+                </div>
+                ))}
             </div>
         ) : (
             <>

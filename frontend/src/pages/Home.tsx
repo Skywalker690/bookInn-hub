@@ -173,8 +173,20 @@ const Home: React.FC = () => {
           </div>
 
           {loading ? (
-             <div className="flex justify-center h-64 items-center bg-gray-50 rounded-2xl">
-               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+               {[1, 2, 3].map((i) => (
+                 <div key={i} className="rounded-xl overflow-hidden border border-gray-100 shadow-sm h-full flex flex-col">
+                   <div className="h-72 bg-gray-200 animate-pulse"></div>
+                   <div className="p-6 space-y-4 flex flex-col flex-grow">
+                     <div className="h-8 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                     <div className="space-y-2 flex-grow">
+                       <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
+                       <div className="h-4 bg-gray-200 rounded w-5/6 animate-pulse"></div>
+                     </div>
+                     <div className="h-12 bg-gray-200 rounded animate-pulse mt-6"></div>
+                   </div>
+                 </div>
+               ))}
              </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
