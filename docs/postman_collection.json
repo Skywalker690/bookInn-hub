@@ -1,0 +1,838 @@
+{
+  "info": {
+    "_postman_id": "hotel-management-api-collection",
+    "name": "Hotel Management System API",
+    "description": "Complete API collection for Hotel Management System. Includes authentication, room management, booking, and user management endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register New User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.user && jsonData.user.id) {",
+                  "        pm.environment.set(\"userId\", jsonData.user.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securePassword123\",\n  \"phoneNumber\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register a new user account. Returns user details without the password."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"authToken\", jsonData.token);",
+                  "    pm.environment.set(\"userRole\", jsonData.role);",
+                  "    console.log(\"Token saved:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login with email and password. Returns JWT token that should be used for authenticated requests."
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"adminToken\", jsonData.token);",
+                  "    console.log(\"Admin token saved:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hotel.com\",\n  \"password\": \"adminPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login as admin user. Admin credentials should be created separately."
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints for user registration and login"
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "all"
+              ]
+            },
+            "description": "Retrieve all rooms in the system. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room Types",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var types = pm.response.json();",
+                  "    if (types.length > 0) {",
+                  "        pm.environment.set(\"roomType\", types[0]);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "types"
+              ]
+            },
+            "description": "Get list of all available room types."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/room-by-id/:roomId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "room-by-id",
+                ":roomId"
+              ],
+              "variable": [
+                {
+                  "key": "roomId",
+                  "value": "1",
+                  "description": "ID of the room to retrieve"
+                }
+              ]
+            },
+            "description": "Get detailed information about a specific room including its bookings."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Available Rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/all-available-rooms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "all-available-rooms"
+              ]
+            },
+            "description": "Get all rooms that are currently available for booking."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Available Rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/available-rooms-by-date-and-type?checkInDate=2025-12-01&checkOutDate=2025-12-05&roomType=Deluxe Suite",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "available-rooms-by-date-and-type"
+              ],
+              "query": [
+                {
+                  "key": "checkInDate",
+                  "value": "2025-12-01",
+                  "description": "Check-in date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "checkOutDate",
+                  "value": "2025-12-05",
+                  "description": "Check-out date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "roomType",
+                  "value": "Deluxe Suite",
+                  "description": "Type of room to search for"
+                }
+              ]
+            },
+            "description": "Search for available rooms by date range and room type."
+          },
+          "response": []
+        },
+        {
+          "name": "Add New Room (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.room && jsonData.room.id) {",
+                  "        pm.environment.set(\"roomId\", jsonData.room.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": [],
+                  "description": "Room photo file"
+                },
+                {
+                  "key": "roomType",
+                  "value": "Deluxe Suite",
+                  "type": "text",
+                  "description": "Type of room"
+                },
+                {
+                  "key": "roomPrice",
+                  "value": "250.00",
+                  "type": "text",
+                  "description": "Price per night"
+                },
+                {
+                  "key": "roomDescription",
+                  "value": "Luxurious suite with ocean view",
+                  "type": "text",
+                  "description": "Room description"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rooms/add",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "add"
+              ]
+            },
+            "description": "Add a new room to the system. Requires ADMIN role. Image is uploaded to AWS S3."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Room (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": [],
+                  "description": "Updated room photo (optional)"
+                },
+                {
+                  "key": "roomType",
+                  "value": "Presidential Suite",
+                  "type": "text",
+                  "description": "Updated room type (optional)"
+                },
+                {
+                  "key": "roomPrice",
+                  "value": "500.00",
+                  "type": "text",
+                  "description": "Updated price (optional)"
+                },
+                {
+                  "key": "roomDescription",
+                  "value": "Ultra-luxurious presidential suite",
+                  "type": "text",
+                  "description": "Updated description (optional)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rooms/update/:roomId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "update",
+                ":roomId"
+              ],
+              "variable": [
+                {
+                  "key": "roomId",
+                  "value": "{{roomId}}",
+                  "description": "ID of the room to update"
+                }
+              ]
+            },
+            "description": "Update room information. Requires ADMIN role. All fields are optional."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Room (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/delete/:roomId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "delete",
+                ":roomId"
+              ],
+              "variable": [
+                {
+                  "key": "roomId",
+                  "value": "{{roomId}}",
+                  "description": "ID of the room to delete"
+                }
+              ]
+            },
+            "description": "Delete a room from the system. Requires ADMIN role."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing hotel rooms"
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Book a Room",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.bookingConfirmationCode) {",
+                  "        pm.environment.set(\"confirmationCode\", jsonData.bookingConfirmationCode);",
+                  "    }",
+                  "    if (jsonData.booking && jsonData.booking.id) {",
+                  "        pm.environment.set(\"bookingId\", jsonData.booking.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkInDate\": \"2025-12-01\",\n  \"checkOutDate\": \"2025-12-05\",\n  \"numOfAdults\": 2,\n  \"numOfChildren\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/book-room/:roomId/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "book-room",
+                ":roomId",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "roomId",
+                  "value": "1",
+                  "description": "ID of the room to book"
+                },
+                {
+                  "key": "userId",
+                  "value": "{{userId}}",
+                  "description": "ID of the user making the booking"
+                }
+              ]
+            },
+            "description": "Create a new booking for a room. Requires authentication (USER or ADMIN role)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Bookings (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "all"
+              ]
+            },
+            "description": "Retrieve all bookings in the system. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking By Confirmation Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/get-by-confirmation-code/:confirmationCode",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "get-by-confirmation-code",
+                ":confirmationCode"
+              ],
+              "variable": [
+                {
+                  "key": "confirmationCode",
+                  "value": "{{confirmationCode}}",
+                  "description": "Booking confirmation code"
+                }
+              ]
+            },
+            "description": "Retrieve booking details using confirmation code. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/cancel/:bookingId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "cancel",
+                ":bookingId"
+              ],
+              "variable": [
+                {
+                  "key": "bookingId",
+                  "value": "{{bookingId}}",
+                  "description": "ID of the booking to cancel"
+                }
+              ]
+            },
+            "description": "Cancel an existing booking. Requires authentication (USER or ADMIN role)."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing bookings"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "all"
+              ]
+            },
+            "description": "Retrieve all users in the system. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/get-by-id/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "get-by-id",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}",
+                  "description": "ID of the user"
+                }
+              ]
+            },
+            "description": "Get detailed information about a specific user including their bookings."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Logged-in User Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/get-logged-in-profile-info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "get-logged-in-profile-info"
+              ]
+            },
+            "description": "Get profile information of the currently logged-in user. Token is used to identify the user."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Booking History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/get-user-booking/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "get-user-booking",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}",
+                  "description": "ID of the user"
+                }
+              ]
+            },
+            "description": "Get booking history for a specific user."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/get-by-id/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "get-by-id",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}",
+                  "description": "ID of the user to delete"
+                }
+              ]
+            },
+            "description": "Delete a user from the system. Requires authentication."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for user management"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
