@@ -187,7 +187,7 @@ public class UserService implements IUserService {
         try {
             User user =userRepository.findByEmail(email).orElseThrow(
                     () -> new OurException("User not Found"));
-            UserDTO dto =Utils.mapUserEntityToUserDTO(user);
+            UserDTO dto =Utils.mapUserEntityToUserDTOPlusBooking(user);
 
             response.setUser(dto);
             response.setStatusCode(200);

@@ -38,6 +38,17 @@ public class Utils {
         return userDTO;
     }
 
+    public static UserDTO mapUserEntityToUserDTOPlusBooking(User user) {
+        UserDTO userDTO = mapUserEntityToUserDTO(user);
+        if (user.getBookings() != null) {
+            userDTO.setBookings(user.getBookings()
+                    .stream()
+                    .map(Utils::mapBookingEntityToBookingDTO)
+                    .collect(Collectors.toList()));
+        }
+        return userDTO;
+    }
+
     public static RoomDTO mapRoomEntityToRoomDTO(Room room) {
         RoomDTO roomDTO = new RoomDTO();
 
