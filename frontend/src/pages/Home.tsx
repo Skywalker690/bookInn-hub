@@ -3,7 +3,7 @@ import { ApiService } from '../services/apiService';
 import { RoomDTO } from '../types';
 import RoomCard from '../components/RoomCard';
 import { Link } from 'react-router-dom';
-import { Search, Calendar, Wifi, Utensils, Phone, ArrowRight, ShieldCheck, ChevronDown, MapPin } from 'lucide-react';
+import { Search, Calendar, Wifi, Utensils, Phone, ArrowRight, ShieldCheck, ChevronDown, MapPin, Star, Quote } from 'lucide-react';
 
 const Home: React.FC = () => {
   const [featuredRooms, setFeaturedRooms] = useState<RoomDTO[]>([]);
@@ -184,6 +184,58 @@ const Home: React.FC = () => {
                   View All Accommodations
                </Link>
            </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="container mx-auto px-6 max-w-7xl relative z-10">
+            <div className="text-center mb-16">
+                 <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Guest Stories</h2>
+                 <p className="text-gray-500 max-w-2xl mx-auto">Read about the experiences of our valued guests who have made BookInn Hub their home away from home.</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[
+                    {
+                        text: "From the moment we arrived, we were treated like royalty. The attention to detail in the suite was simply astounding. Highly recommended.",
+                        author: "Sarah Jenkins",
+                        location: "New York, USA",
+                        rating: 5
+                    },
+                    {
+                        text: "The dining experience was world-class. I've traveled to over 50 countries, and the culinary journey here stands out as the best.",
+                        author: "Marcus Chen",
+                        location: "Singapore",
+                        rating: 5
+                    },
+                    {
+                        text: "A perfect blend of modern luxury and timeless elegance. The concierge team went above and beyond to ensure our anniversary was perfect.",
+                        author: "Emma & James Wilson",
+                        location: "London, UK",
+                        rating: 5
+                    }
+                ].map((review, i) => (
+                    <div key={i} className="bg-gray-50 p-8 rounded-2xl relative hover:-translate-y-2 transition-transform duration-300">
+                        <Quote className="w-10 h-10 text-blue-100 absolute top-6 left-6" />
+                        <div className="relative z-10 pt-6">
+                            <div className="flex text-yellow-400 mb-4">
+                                {[...Array(review.rating)].map((_, r) => <Star key={r} className="w-4 h-4 fill-current" />)}
+                            </div>
+                            <p className="text-gray-600 mb-6 italic leading-relaxed">"{review.text}"</p>
+                            <div className="flex items-center">
+                                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center font-serif font-bold text-gray-500">
+                                    {review.author[0]}
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm font-bold text-gray-900">{review.author}</p>
+                                    <p className="text-xs text-gray-500">{review.location}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
       </section>
 
