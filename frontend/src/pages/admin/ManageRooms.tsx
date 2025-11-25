@@ -3,12 +3,17 @@ import { ApiService } from '../../services/apiService';
 import { RoomDTO } from '../../types';
 import { ROOM_TYPES } from '../../constants';
 import { Trash2, Edit, Plus, X } from 'lucide-react';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const ManageRooms: React.FC = () => {
   const [rooms, setRooms] = useState<RoomDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoomId, setEditingRoomId] = useState<number | null>(null);
+
+  // Confirmation Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [roomToDelete, setRoomToDelete] = useState<number | null>(null);
 
   // Form State
   const [roomType, setRoomType] = useState('');
@@ -34,14 +39,18 @@ const ManageRooms: React.FC = () => {
     fetchRooms();
   }, []);
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this room?')) {
-      try {
-        await ApiService.deleteRoom(id);
-        fetchRooms();
-      } catch (error) {
-        alert('Failed to delete room');
-      }
+  const initiateDelete = (id: number) => {
+    setRoomToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!roomToDelete) return;
+    try {
+      await ApiService.deleteRoom(roomToDelete);
+      fetchRooms();
+    } catch (error) {
+      alert('Failed to delete room');
     }
   };
 
@@ -94,7 +103,7 @@ const ManageRooms: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900">Manage Rooms</h1>
         <button
           onClick={() => handleOpenModal()}
-          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center"
+          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center shadow-sm"
         >
           <Plus className="h-4 w-4 mr-2" /> Add Room
         </button>
@@ -122,7 +131,7 @@ const ManageRooms: React.FC = () => {
                   <button onClick={() => handleOpenModal(room)} className="text-blue-600 hover:text-blue-900 mr-4">
                     <Edit className="h-5 w-5" />
                   </button>
-                  <button onClick={() => handleDelete(room.id)} className="text-red-600 hover:text-red-900">
+                  <button onClick={() => initiateDelete(room.id)} className="text-red-600 hover:text-red-900">
                     <Trash2 className="h-5 w-5" />
                   </button>
                 </td>
@@ -204,6 +213,14 @@ const ManageRooms: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Room"
+        message="Are you sure you want to delete this room? This action cannot be undone."
+      />
     </div>
   );
 };

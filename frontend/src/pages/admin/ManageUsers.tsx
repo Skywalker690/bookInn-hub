@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { ApiService } from '../../services/apiService';
 import { UserDTO } from '../../types';
 import { Trash2 } from 'lucide-react';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const ManageUsers: React.FC = () => {
   const [users, setUsers] = useState<UserDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Confirmation Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -25,14 +30,18 @@ const ManageUsers: React.FC = () => {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      try {
-        await ApiService.deleteUser(id.toString());
-        fetchUsers();
-      } catch (error) {
-        alert('Failed to delete user');
-      }
+  const initiateDelete = (id: number) => {
+    setUserToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return;
+    try {
+      await ApiService.deleteUser(userToDelete.toString());
+      fetchUsers();
+    } catch (error) {
+      alert('Failed to delete user');
     }
   };
 
@@ -65,7 +74,7 @@ const ManageUsers: React.FC = () => {
                     </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button onClick={() => handleDelete(user.id)} className="text-red-600 hover:text-red-900">
+                  <button onClick={() => initiateDelete(user.id)} className="text-red-600 hover:text-red-900">
                     <Trash2 className="h-5 w-5" />
                   </button>
                 </td>
@@ -74,6 +83,14 @@ const ManageUsers: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete User"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+      />
     </div>
   );
 };

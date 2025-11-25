@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { ApiService } from '../services/apiService';
 import { BookingDTO, UserDTO } from '../types';
 import { Trash2 } from 'lucide-react';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const Profile: React.FC = () => {
   const { user: authUser, logout } = useAuth();
@@ -10,6 +11,10 @@ const Profile: React.FC = () => {
   const [bookings, setBookings] = useState<BookingDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState<number | null>(null);
 
   const fetchProfileData = async () => {
     try {
@@ -19,9 +24,6 @@ const Profile: React.FC = () => {
         setProfile(userResponse.user);
         
         // Fetch bookings
-        // Note: The profile endpoint usually returns bookings inside user object according to docs (user.bookings),
-        // but there is also a specific endpoint /users/get-user-booking/{userId}.
-        // We will use the specific one to be sure or use the one from profile if available.
         if (userResponse.user.bookings && userResponse.user.bookings.length > 0) {
             setBookings(userResponse.user.bookings);
         } else {
@@ -44,11 +46,16 @@ const Profile: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCancelBooking = async (bookingId: number) => {
-    if (!window.confirm('Are you sure you want to cancel this booking?')) return;
+  const initiateCancel = (bookingId: number) => {
+    setBookingToDelete(bookingId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!bookingToDelete) return;
     
     try {
-        await ApiService.cancelBooking(bookingId);
+        await ApiService.cancelBooking(bookingToDelete);
         // Refresh bookings
         fetchProfileData();
     } catch (err: any) {
@@ -56,7 +63,39 @@ const Profile: React.FC = () => {
     }
   };
 
-  if (loading) return <div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
+  if (loading) {
+      return (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Profile Skeleton */}
+                <div className="md:col-span-1">
+                    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100 flex flex-col items-center">
+                         <div className="h-24 w-24 rounded-full bg-gray-200 animate-pulse mb-4"></div>
+                         <div className="h-6 w-32 bg-gray-200 animate-pulse mb-2 rounded"></div>
+                         <div className="h-4 w-20 bg-gray-200 animate-pulse mb-6 rounded"></div>
+                         <div className="w-full space-y-4">
+                             <div className="h-10 bg-gray-100 animate-pulse rounded"></div>
+                             <div className="h-10 bg-gray-100 animate-pulse rounded"></div>
+                         </div>
+                    </div>
+                </div>
+                {/* Bookings Skeleton */}
+                <div className="md:col-span-2 space-y-4">
+                    <div className="h-8 w-48 bg-gray-200 animate-pulse rounded mb-6"></div>
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-32 animate-pulse flex justify-between">
+                             <div className="space-y-3 w-1/2">
+                                 <div className="h-6 w-24 bg-gray-200 rounded"></div>
+                                 <div className="h-4 w-full bg-gray-200 rounded"></div>
+                                 <div className="h-4 w-2/3 bg-gray-200 rounded"></div>
+                             </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+      );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -125,7 +164,7 @@ const Profile: React.FC = () => {
                             </div>
                             <div className="mt-4 sm:mt-0">
                                 <button 
-                                    onClick={() => handleCancelBooking(booking.id)}
+                                    onClick={() => initiateCancel(booking.id)}
                                     className="flex items-center space-x-1 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded transition text-sm"
                                 >
                                     <Trash2 className="h-4 w-4" />
@@ -138,6 +177,14 @@ const Profile: React.FC = () => {
             )}
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmCancel}
+        title="Cancel Booking"
+        message="Are you sure you want to cancel this booking? This action cannot be undone."
+      />
     </div>
   );
 };
