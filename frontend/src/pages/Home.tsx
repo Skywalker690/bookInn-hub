@@ -66,8 +66,8 @@ const Home: React.FC = () => {
               <Link to="/rooms" className="px-10 py-4 bg-white text-gray-900 font-bold rounded-full hover:bg-gray-100 transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] font-sans">
                 Book Your Stay
               </Link>
-              <Link to="/rooms" className="px-10 py-4 bg-transparent border border-white text-white font-bold rounded-full hover:bg-white/10 transition-all backdrop-blur-sm font-sans">
-                View Suites
+              <Link to="/find-booking" className="px-10 py-4 bg-transparent border border-white text-white font-bold rounded-full hover:bg-white/10 transition-all backdrop-blur-sm font-sans">
+                Find Booking
               </Link>
            </div>
         </div>

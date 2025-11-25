@@ -182,12 +182,10 @@ const Profile: React.FC = () => {
                         </div>
                     </div>
 
-
-
                     {/* Booking History */}
                     <div className="lg:col-span-2">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900 font-serif">Recent Reservations</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 font-serif">.</h2>
                             <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                                 {bookings.length} Bookings
                             </span>

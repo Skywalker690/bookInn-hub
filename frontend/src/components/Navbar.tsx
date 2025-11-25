@@ -33,7 +33,6 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className={isActive('/')}>Home</Link>
             <Link to="/rooms" className={isActive('/rooms')}>Rooms</Link>
-            <Link to="/find-booking" className={isActive('/find-booking')}>Find Booking</Link>
             
             {isAuthenticated && isAdmin && (
               <div className="relative group h-full flex items-center">

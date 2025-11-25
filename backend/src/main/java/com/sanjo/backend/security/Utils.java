@@ -60,9 +60,10 @@ public class Utils {
         return roomDTO;
     }
 
+    //For profile endpoint
     public static BookingDTO mapBookingEntityToBookingDTO(Booking booking) {
         BookingDTO bookingDTO = new BookingDTO();
-        // Map simple fields
+
         bookingDTO.setId(booking.getId());
         bookingDTO.setCheckInDate(booking.getCheckInDate());
         bookingDTO.setCheckOutDate(booking.getCheckOutDate());
@@ -70,6 +71,11 @@ public class Utils {
         bookingDTO.setNumOfChildren(booking.getNumOfChildren());
         bookingDTO.setTotalNumOfGuest(booking.getTotalNumOfGuest());
         bookingDTO.setBookingConfirmationCode(booking.getBookingConfirmationCode());
+
+        if (booking.getRoom() != null) {
+            bookingDTO.setRoom(Utils.mapRoomEntityToRoomDTO(booking.getRoom()));
+        }
+
         return bookingDTO;
     }
 
