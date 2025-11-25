@@ -6,7 +6,6 @@ import com.sanjo.backend.dto.RoomDTO;
 import com.sanjo.backend.entity.Room;
 import com.sanjo.backend.exception.OurException;
 import com.sanjo.backend.repository.RoomRepository;
-import com.sanjo.backend.service.AwsS3Service;
 import com.sanjo.backend.service.interfac.IRoomService;
 import com.sanjo.backend.security.Utils;
 import lombok.RequiredArgsConstructor;

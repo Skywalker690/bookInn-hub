@@ -1,4 +1,4 @@
-package com.sanjo.backend.service;
+package com.sanjo.backend.service.implementation;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
