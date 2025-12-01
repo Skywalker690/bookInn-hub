@@ -1,11 +1,10 @@
-import { API_BASE_URL } from '../constants';
+import { REACT_APP_API_BASE_URL } from '../constants';
 import { AuthResponse } from '../types';
 
 export class ApiService {
   private static getHeaders(isMultipart = false) {
     const token = localStorage.getItem('token');
     const headers: HeadersInit = {};
-    
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -19,7 +18,7 @@ export class ApiService {
 
   static async request(endpoint: string, method: string, body?: any, isMultipart = false): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const response = await fetch(`${REACT_APP_API_BASE_URL}${endpoint}`, {
         method,
         headers: this.getHeaders(isMultipart),
         body: isMultipart ? body : (body ? JSON.stringify(body) : undefined),
